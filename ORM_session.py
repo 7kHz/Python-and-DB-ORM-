@@ -35,15 +35,10 @@ for model in data:
 
 
 def book_data(session_, publisher_name):
-    book_title = [title.title for title in session_.query(Book).join(Publisher.book)
-    .filter(Publisher.name == publisher_name)]
-    shop_name = [name.name for name in session_.query(Shop).join(Publisher.book).join(Book.stock)
-    .join(Stock.shop).filter(Publisher.name == publisher_name)]
-    sale_price = [price.price for price in session_.query(Sale).join(Publisher.book).join(Book.stock)
-    .join(Stock.sale).filter(Publisher.name == publisher_name)]
-    date_sale = [sale.date_sale for sale in session_.query(Sale).join(Publisher.book)
-    .join(Book.stock).join(Stock.sale).filter(Publisher.name == publisher_name)]
-    return f'{book_title[0]} | {shop_name[0]} | {sale_price[0]} | {date_sale[0]}'
+    for book_, shop_, price, date_sale in session_.query(Book.title, Shop.name, Sale.price, Sale.date_sale)\
+            .join(Publisher.book).join(Book.stock).join(Stock.sale).join(Stock.shop)\
+            .filter(Publisher.name == publisher_name):
+        print(book_, "|", shop_, "|", price, "|", date_sale)
 
 
-print(book_data(session, input()))
+book_data(session, input())
